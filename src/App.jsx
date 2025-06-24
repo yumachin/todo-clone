@@ -4,9 +4,15 @@ import './App.css'
 function App() {
   const [text, setText] = useState("")
   const [todos, setTodos] = useState([])
+  const [editIndex, setEditIndex] = useState(null)
+  const [editText, setEditText] = useState("")
 
   const handleInput = (e) => {
     setText(e.target.value)
+  }
+
+  const handleEditInput = (e) => {
+    setEditText(e.target.value)
   }
 
   const handleAdd = () => {
@@ -23,6 +29,21 @@ function App() {
     setTodos(newTodos)
   }
 
+  const handleEdit = (index) => {
+    setEditIndex(index)
+    setEditText(todos[index])
+  }
+
+  const handleSave = () => {
+    if (editText.trim() !== "") {
+      const newTodos = todos.map((todo, i) => i === editIndex ? editText : todo)
+      setTodos(newTodos)
+      setEditIndex(null)
+    } else {
+      alert("タスクを入力してください")
+    }
+  }
+
   return (
     <div className='container'>
       <h1>Todoリスト</h1>
@@ -37,11 +58,23 @@ function App() {
       <ul>
         {todos.map((todo, index) => (
           <li>
-            {todo}
-            <div className='buttons'>
-              <button>編集</button>
-              <button className='delete-button' onClick={() => handleDelete(index)}>削除</button>
-            </div>
+            {editIndex === index ? (
+              <>
+                <input
+                  value={editText}
+                  onChange={handleEditInput}
+                />
+                <button onClick={handleSave}>保存</button>
+              </>
+            ) : (
+              <>
+                {todo}
+                <div className='buttons'>
+                  <button onClick={() => handleEdit(index)}>編集</button>
+                  <button className='delete-button' onClick={() => handleDelete(index)}>削除</button>
+                </div>
+              </>
+            )}
           </li>
         ))}
       </ul>
